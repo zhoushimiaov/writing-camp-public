@@ -1,0 +1,16 @@
+# ===== 密钥与证书：绝不提交 =====
+cf-token.txt
+*token*
+key.pem
+cert.pem
+*.pem
+
+# ===== 构建产物（python build_dist.py 重新生成）=====
+dist/
+
+# ===== 运行时 / 临时 =====
+.wrangler/
+__pycache__/
+*.log
+.DS_Store
+Thumbs.db
