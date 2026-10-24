@@ -328,76 +328,82 @@ function speakBtn(text) {
   return '<button class="mini-btn speak-btn" data-act="speak" data-text="' + esc(text) + '">🔊 念给我听</button>';
 }
 
-/* ================= 卡通吉祥物（内联 SVG：成就卡小伙伴、教练、空状态） ================= */
+/* ================= 卡通吉祥物（内联 SVG：成就卡小伙伴、教练、空状态）
+   画法配方：圆滚滚大头身 + 小短腿 + 双高光大眼 + ω 小猫嘴 + 大腮红 ====== */
 const M_INK = '#5C5266';
 function mascot(spec, size, mono) {
   const F = c => mono ? '#CFC9DB' : c;      /* mono：未收集的剪影模式 */
   const S = mono ? '#B4AEC4' : M_INK;
+  const PIN = F('#F7A8B8');
   const bd = F(spec.body);
   const st = 'stroke="' + S + '" stroke-linejoin="round" stroke-linecap="round"';
+  const eyeL = '<circle cx="45" cy="71" r="7.5" fill="' + S + '"/><circle cx="48" cy="68" r="2.8" fill="#fff"/><circle cx="42.5" cy="74" r="1.4" fill="#fff"/>';
+  const eyeR = '<circle cx="75" cy="71" r="7.5" fill="' + S + '"/><circle cx="78" cy="68" r="2.8" fill="#fff"/><circle cx="72.5" cy="74" r="1.4" fill="#fff"/>';
+  const wMouth = '<path d="M53 82 q3.5 4.5 7 0 q3.5 4.5 7 0" fill="none" ' + st + ' stroke-width="3"/>';
   let s = '';
+  /* 小短腿（藏在身体后面，只露出一点点） */
+  s += '<ellipse cx="46" cy="107" rx="10" ry="7" fill="' + bd + '" ' + st + ' stroke-width="3.5"/>' +
+       '<ellipse cx="74" cy="107" rx="10" ry="7" fill="' + bd + '" ' + st + ' stroke-width="3.5"/>';
   /* 耳朵（画在身体后面） */
   if (spec.ear === 'cat') s +=
-    '<polygon points="30,46 27,12 56,34" fill="' + F('#F9DC8F') + '" ' + st + ' stroke-width="4"/>' +
-    '<polygon points="90,46 93,12 64,34" fill="' + F('#F9DC8F') + '" ' + st + ' stroke-width="4"/>';
+    '<polygon points="31,42 26,10 58,30" fill="' + F('#F9DC8F') + '" ' + st + ' stroke-width="3.5"/>' +
+    '<polygon points="89,42 94,10 62,30" fill="' + F('#F9DC8F') + '" ' + st + ' stroke-width="3.5"/>' +
+    '<polygon points="34,33 31,16 49,28" fill="' + PIN + '"/>' +
+    '<polygon points="86,33 89,16 71,28" fill="' + PIN + '"/>';
   if (spec.ear === 'bear') s +=
-    '<circle cx="34" cy="27" r="14" fill="' + bd + '" ' + st + ' stroke-width="4"/>' +
-    '<circle cx="86" cy="27" r="14" fill="' + bd + '" ' + st + ' stroke-width="4"/>' +
-    '<circle cx="34" cy="27" r="6" fill="' + F('#F7A8B8') + '"/><circle cx="86" cy="27" r="6" fill="' + F('#F7A8B8') + '"/>';
+    '<circle cx="33" cy="24" r="15" fill="' + bd + '" ' + st + ' stroke-width="3.5"/>' +
+    '<circle cx="87" cy="24" r="15" fill="' + bd + '" ' + st + ' stroke-width="3.5"/>' +
+    '<circle cx="33" cy="24" r="7" fill="' + PIN + '"/><circle cx="87" cy="24" r="7" fill="' + PIN + '"/>';
   if (spec.ear === 'bunny') s +=
-    '<ellipse cx="42" cy="20" rx="9" ry="17" fill="' + bd + '" ' + st + ' stroke-width="4" transform="rotate(-10 42 20)"/>' +
-    '<ellipse cx="78" cy="20" rx="9" ry="17" fill="' + bd + '" ' + st + ' stroke-width="4" transform="rotate(10 78 20)"/>' +
-    '<ellipse cx="42" cy="22" rx="4" ry="10" fill="' + F('#F7A8B8') + '" transform="rotate(-10 42 22)"/>' +
-    '<ellipse cx="78" cy="22" rx="4" ry="10" fill="' + F('#F7A8B8') + '" transform="rotate(10 78 22)"/>';
-  /* 身体 */
-  s += '<rect x="22" y="34" width="76" height="72" rx="30" fill="' + bd + '" ' + st + ' stroke-width="4"/>';
-  /* 腮红 */
-  s += '<ellipse cx="38" cy="77" rx="6.5" ry="4" fill="' + F('#F7A8B8') + '" opacity=".8"/>' +
-       '<ellipse cx="82" cy="77" rx="6.5" ry="4" fill="' + F('#F7A8B8') + '" opacity=".8"/>';
+    '<ellipse cx="41" cy="19" rx="10" ry="17" fill="' + bd + '" ' + st + ' stroke-width="3.5" transform="rotate(-10 41 19)"/>' +
+    '<ellipse cx="79" cy="19" rx="10" ry="17" fill="' + bd + '" ' + st + ' stroke-width="3.5" transform="rotate(10 79 19)"/>' +
+    '<ellipse cx="41" cy="21" rx="4.5" ry="11" fill="' + PIN + '" transform="rotate(-10 41 21)"/>' +
+    '<ellipse cx="79" cy="21" rx="4.5" ry="11" fill="' + PIN + '" transform="rotate(10 79 21)"/>';
+  /* 圆滚滚的身体 */
+  s += '<rect x="23" y="26" width="74" height="80" rx="34" fill="' + bd + '" ' + st + ' stroke-width="3.5"/>';
+  /* 身体高光（左上弯弯一条，立刻软萌） */
+  s += '<path d="M33 43 q-5 10 -1 20" fill="none" stroke="' + (mono ? '#DFDBE7' : '#fff') + '" stroke-width="4.5" opacity=".4" stroke-linecap="round"/>';
+  /* 腮红（大一点） */
+  s += '<ellipse cx="36" cy="81" rx="8" ry="5" fill="' + PIN + '" opacity=".85"/>' +
+       '<ellipse cx="84" cy="81" rx="8" ry="5" fill="' + PIN + '" opacity=".85"/>';
   /* 脸 */
   if (spec.face === 'sleepy') s +=
-    '<path d="M39 65 q7 7 14 0" fill="none" ' + st + ' stroke-width="3.5"/>' +
-    '<path d="M67 65 q7 7 14 0" fill="none" ' + st + ' stroke-width="3.5"/>' +
-    '<path d="M55 77 q5 4 10 0" fill="none" ' + st + ' stroke-width="3.5"/>' +
-    '<text x="97" y="28" font-size="15" font-weight="700" fill="' + S + '">z z</text>';
-  else if (spec.face === 'wink') s +=
-    '<circle cx="46" cy="66" r="5.5" fill="' + S + '"/><circle cx="48" cy="64" r="2" fill="#fff"/>' +
-    '<path d="M68 67 q6 -6 12 0" fill="none" ' + st + ' stroke-width="3.5"/>' +
-    '<path d="M52 76 q8 7 16 0" fill="none" ' + st + ' stroke-width="3.5"/>';
-  else if (spec.face === 'wow') s +=
-    '<circle cx="46" cy="65" r="7" fill="' + S + '"/><circle cx="48" cy="63" r="2.4" fill="#fff"/>' +
-    '<circle cx="74" cy="65" r="7" fill="' + S + '"/><circle cx="76" cy="63" r="2.4" fill="#fff"/>' +
-    '<circle cx="60" cy="78" r="4.5" fill="none" ' + st + ' stroke-width="3.5"/>';
-  else s +=  /* happy */
-    '<circle cx="46" cy="66" r="5.5" fill="' + S + '"/><circle cx="48" cy="64" r="2" fill="#fff"/>' +
-    '<circle cx="74" cy="66" r="5.5" fill="' + S + '"/><circle cx="76" cy="64" r="2" fill="#fff"/>' +
-    '<path d="M52 76 q8 7 16 0" fill="none" ' + st + ' stroke-width="3.5"/>';
+    '<path d="M38 71 q7 6 14 0" fill="none" ' + st + ' stroke-width="3"/>' +
+    '<path d="M68 71 q7 6 14 0" fill="none" ' + st + ' stroke-width="3"/>' +
+    '<path d="M56 82 q4 3.5 8 0" fill="none" ' + st + ' stroke-width="3"/>' +
+    '<text x="99" y="28" font-size="16" font-weight="700" fill="' + S + '">z z</text>';
+  else if (spec.face === 'wink') s += eyeL +
+    '<path d="M68 72 q7 -7 14 0" fill="none" ' + st + ' stroke-width="3"/>' + wMouth;
+  else if (spec.face === 'wow') s += eyeL + eyeR +
+    '<ellipse cx="60" cy="84" rx="4" ry="5.5" fill="' + F('#D77A93') + '"/>';
+  else s += eyeL + eyeR + wMouth;   /* happy */
   /* 眼镜 */
   if (spec.glasses) s +=
-    '<circle cx="46" cy="66" r="10.5" fill="none" ' + st + ' stroke-width="3.2"/>' +
-    '<circle cx="74" cy="66" r="10.5" fill="none" ' + st + ' stroke-width="3.2"/>' +
-    '<path d="M56.5 66 h7" ' + st + ' stroke-width="3.2"/>';
+    '<circle cx="45" cy="71" r="11.5" fill="none" ' + st + ' stroke-width="3"/>' +
+    '<circle cx="75" cy="71" r="11.5" fill="none" ' + st + ' stroke-width="3"/>' +
+    '<path d="M56.5 71 h7" ' + st + ' stroke-width="3"/>';
   /* 领结 */
   if (spec.bowtie) s +=
-    '<polygon points="58,103 43,96 43,111" fill="' + F('#F7A8B8') + '" ' + st + ' stroke-width="3"/>' +
-    '<polygon points="62,103 77,96 77,111" fill="' + F('#F7A8B8') + '" ' + st + ' stroke-width="3"/>' +
-    '<circle cx="60" cy="103" r="3.6" fill="' + F('#C9647F') + '"/>';
+    '<polygon points="58,101 43,94 43,108" fill="' + PIN + '" ' + st + ' stroke-width="2.8"/>' +
+    '<polygon points="62,101 77,94 77,108" fill="' + PIN + '" ' + st + ' stroke-width="2.8"/>' +
+    '<circle cx="60" cy="101" r="4" fill="' + F('#C9647F') + '"/>';
   /* 帽子 */
   if (spec.hat === 'party') s +=
-    '<polygon points="60,4 47,34 73,34" fill="' + F('#F7A8B8') + '" ' + st + ' stroke-width="4"/>' +
-    '<circle cx="60" cy="5" r="4.5" fill="' + (mono ? '#CFC9DB' : '#fff') + '" ' + st + ' stroke-width="3"/>';
+    '<polygon points="60,7 49,32 71,32" fill="' + PIN + '" ' + st + ' stroke-width="3.5"/>' +
+    '<path d="M52 21 q8 4 16 0" fill="none" ' + st + ' stroke-width="2.5"/>' +
+    '<circle cx="60" cy="6" r="4.5" fill="' + (mono ? '#CFC9DB' : '#fff') + '" ' + st + ' stroke-width="3"/>';
   if (spec.hat === 'crown') s +=
-    '<polygon points="46,32 46,12 56,24 60,8 64,24 74,12 74,32" fill="' + F('#F9DC8F') + '" ' + st + ' stroke-width="4"/>' +
-    '<circle cx="60" cy="24" r="3" fill="' + F('#F7A8B8') + '"/>';
+    '<polygon points="45,27 45,9 56,21 60,5 64,21 75,9 75,27" fill="' + F('#F9DC8F') + '" ' + st + ' stroke-width="3.5"/>' +
+    '<circle cx="60" cy="21" r="3" fill="' + PIN + '"/>';
   if (spec.hat === 'grad') s +=
-    '<polygon points="60,10 92,24 60,38 28,24" fill="' + F('#8A7F96') + '" ' + st + ' stroke-width="3.5"/>' +
-    '<path d="M92 24 v11" fill="none" ' + st + ' stroke-width="3"/><circle cx="92" cy="38" r="3.5" fill="' + F('#F9DC8F') + '"/>';
+    '<polygon points="60,5 90,18 60,31 30,18" fill="' + F('#8A7F96') + '" ' + st + ' stroke-width="3.5"/>' +
+    '<path d="M90 18 v10" fill="none" ' + st + ' stroke-width="3"/><circle cx="90" cy="29" r="3.5" fill="' + F('#F9DC8F') + '"/>';
   if (spec.hat === 'detect') s +=
-    '<path d="M46 34 v-13 q14 -9 28 0 v13 z" fill="' + F('#8A7F96') + '" ' + st + ' stroke-width="3.5"/>' +
-    '<ellipse cx="60" cy="34" rx="36" ry="7.5" fill="' + F('#8A7F96') + '" ' + st + ' stroke-width="3.5"/>';
+    '<path d="M47 27 v-12 q13 -8 26 0 v12 z" fill="' + F('#8A7F96') + '" ' + st + ' stroke-width="3.5"/>' +
+    '<ellipse cx="60" cy="27" rx="38" ry="8" fill="' + F('#8A7F96') + '" ' + st + ' stroke-width="3.5"/>';
   /* 手里的道具（画在最前面） */
   if (spec.item === 'pencil') s +=
-    '<g transform="rotate(-30 88 86)"><rect x="83" y="58" width="10" height="7" rx="2" fill="' + F('#F7A8B8') + '" ' + st + ' stroke-width="3.2"/>' +
+    '<g transform="rotate(-30 88 86)"><rect x="83" y="58" width="10" height="7" rx="2" fill="' + PIN + '" ' + st + ' stroke-width="3.2"/>' +
     '<rect x="83" y="65" width="10" height="22" rx="2" fill="' + F('#FFD3B8') + '" ' + st + ' stroke-width="3.2"/>' +
     '<polygon points="83,87 88,98 93,87" fill="' + F('#F9DC8F') + '" ' + st + ' stroke-width="3.2"/></g>';
   if (spec.item === 'book') s +=
@@ -425,11 +431,11 @@ function mascot(spec, size, mono) {
     '<path d="M88 90 L91 103" ' + st + ' stroke-width="6"/><circle cx="92" cy="105" r="4" fill="' + F('#F9DC8F') + '" ' + st + ' stroke-width="3"/>';
   if (spec.item === 'mega') s +=
     '<polygon points="74,79 99,67 99,95 74,89" fill="' + F('#FFD3B8') + '" ' + st + ' stroke-width="3.8"/>' +
-    '<rect x="97" y="64" width="7" height="34" rx="3.5" fill="' + F('#F7A8B8') + '" ' + st + ' stroke-width="3.2"/>' +
+    '<rect x="97" y="64" width="7" height="34" rx="3.5" fill="' + PIN + '" ' + st + ' stroke-width="3.2"/>' +
     '<rect x="78" y="90" width="9" height="13" rx="4.5" fill="' + F('#FFD3B8') + '" ' + st + ' stroke-width="3"/>' +
     '<path d="M109 71 q4 9 0 18" fill="none" ' + st + ' stroke-width="3"/><path d="M114 67 q6 13 0 26" fill="none" ' + st + ' stroke-width="3"/>';
   if (spec.item === 'fire') s +=
-    '<path d="M96 52 q12 16 10 30 q-1 12 -12 12 q-11 0 -12 -12 q-1 -14 14 -30 z" fill="' + F('#F7A8B8') + '" ' + st + ' stroke-width="3.8"/>' +
+    '<path d="M96 52 q12 16 10 30 q-1 12 -12 12 q-11 0 -12 -12 q-1 -14 14 -30 z" fill="' + PIN + '" ' + st + ' stroke-width="3.8"/>' +
     '<path d="M94 70 q6 9 5 17 q0 6 -5 6 q-5 0 -5 -6 q-1 -8 5 -17 z" fill="' + F('#F9DC8F') + '"/>';
   if (spec.item === 'pouch') s +=
     '<polygon points="90,68 107,68 105,77 92,77" fill="' + F('#FFD3B8') + '" ' + st + ' stroke-width="3.5"/>' +
@@ -438,7 +444,7 @@ function mascot(spec, size, mono) {
     '<circle cx="94" cy="93" r="5.5" fill="' + F('#F9DC8F') + '" ' + st + ' stroke-width="2.8"/>';
   if (spec.item === 'moon') s +=
     '<path d="M104 54 a17 17 0 1 0 9 30 a13 13 0 1 1 -9 -30 z" fill="' + F('#F9DC8F') + '" ' + st + ' stroke-width="3.8"/>' +
-    '<polygon points="110,52 111.5,56 115.5,56 112.3,58.5 113.4,62.5 110,60.2 106.6,62.5 107.7,58.5 104.5,56 108.5,56" fill="' + F('#F7A8B8') + '"/>';
+    '<polygon points="110,52 111.5,56 115.5,56 112.3,58.5 113.4,62.5 110,60.2 106.6,62.5 107.7,58.5 104.5,56 108.5,56" fill="' + PIN + '"/>';
   return '<svg class="mascot" xmlns="http://www.w3.org/2000/svg" width="' + (size || 64) + '" height="' + (size || 64) + '" viewBox="0 0 120 120" aria-hidden="true">' + s + '</svg>';
 }
 
@@ -454,6 +460,19 @@ function themeRow(act, idx, cur) {
     '<button class="th-chip' + (t === cur ? ' on' : '') + '" data-act="' + act + '" data-i="' + idx + '" data-th="' + t + '">' +
     '<span class="th-dot" style="background:' + THEMES[t].paper + '"></span><span class="th-dot" style="background:' + THEMES[t].sw + '"></span>' +
     THEMES[t].name + '</button>').join('') + '</div>';
+}
+/* 顶栏 🎨 一键换色：点了立刻生效，存到当前孩子的档案里 */
+function showThemePicker() {
+  const k = kid();
+  const cur = (k.theme && THEMES[k.theme]) ? k.theme : 'sakura';
+  openModal(
+    '<h2 class="center">🎨 给 ' + esc(k.name || '小将') + ' 换个配色</h2>' +
+    '<p class="muted small center">点一下立刻换，整个训练营跟着变心情～（每位小将都可以有自己的专属色）</p>' +
+    '<div class="th-picker">' + Object.keys(THEMES).map(t =>
+      '<button class="th-pick' + (t === cur ? ' on' : '') + '" data-act="theme-pick" data-th="' + t + '" style="background:' + THEMES[t].paper + '">' +
+      '<span class="th-dot" style="background:' + THEMES[t].sw + '"></span>' + THEMES[t].name +
+      (t === cur ? '<span class="th-cur">✓</span>' : '') + '</button>').join('') + '</div>' +
+    '<div class="center"><button class="btn primary" data-act="modal-close">就这样，很好看！</button></div>');
 }
 
 /* ================= 页面内语音输入（Safari/Edge 支持；不支持时自动隐藏） ================= */
@@ -708,7 +727,8 @@ function renderHeader() {
       const kk = S.kids[id];
       return '<button class="kid-btn' + (id === S.cur ? ' on' : '') + '" data-act="switch-kid" data-kid="' + id + '">' +
         '<span class="av">' + kk.avatar + '</span><span>' + esc(kk.name || '未设置') + '</span></button>';
-    }).join('') + '</div>' +
+    }).join('') +
+    '<button class="theme-btn" data-act="theme-open" title="换个马卡龙配色">🎨</button></div>' +
     '<div class="status">' +
     '<div class="streak">🔥 连续 ' + calcStreak(k) + ' 天</div>' +
     '<div class="rankline"><span>' + r.icon + ' ' + r.name + '</span><span class="xptxt">' + k.xp + ' XP</span></div>' +
@@ -1766,6 +1786,15 @@ document.addEventListener('click', e => {
     case 'modal-close': closeModal(); break;
     case 'ach-open': openAch(el.dataset.id); break;
     case 'ach-next': closeModal(); break;
+    case 'theme-open': showThemePicker(); break;
+    case 'theme-pick': {
+      if (THEMES[el.dataset.th]) {
+        kid().theme = el.dataset.th;
+        save(); applyTheme();
+      }
+      showThemePicker();   /* 重开弹窗更新 ✓ 标记 */
+      break;
+    }
     case 'ob-theme': {
       const i = +el.dataset.i; obSync();
       OBK[i].theme = el.dataset.th;
@@ -1925,7 +1954,7 @@ document.addEventListener('keydown', e => {
 window.addEventListener('beforeunload', persistCoachDraft);
 
 /* ================= 启动 ================= */
-const APP_VERSION = 'v1.1';
+const APP_VERSION = 'v1.2';
 (function renderVersionBadge() {
   const b = document.createElement('div');
   b.id = 'ver-badge';

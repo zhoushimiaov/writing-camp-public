@@ -224,6 +224,25 @@ h2 { margin-bottom: 8px; }
 .th-dot { width: 15px; height: 15px; border-radius: 50%; border: 1.5px solid rgba(92, 82, 102, .35); display: inline-block; }
 .ob-theme { display: flex; flex-direction: column; gap: 5px; align-items: center; }
 
+/* ===== 顶栏 🎨 一键换色 ===== */
+.theme-btn {
+  width: 42px; height: 42px; border-radius: 50%; align-self: center; flex: none;
+  border: 2px solid var(--ink); background: var(--cream);
+  font-size: 20px; box-shadow: 3px 3px 0 rgba(120, 100, 130, .12);
+  display: flex; align-items: center; justify-content: center;
+}
+.theme-btn:hover { transform: rotate(-12deg) scale(1.08); }
+.th-picker { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 14px 0 10px; }
+.th-pick {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  border: 2.5px solid var(--ink); border-radius: 14px;
+  padding: 14px 8px; font-size: 17px; font-weight: 800;
+  box-shadow: 3px 3px 0 rgba(120, 100, 130, .14);
+}
+.th-pick:hover { transform: translate(-1px, -1px); }
+.th-pick.on { outline: 3px solid var(--accent-deep); outline-offset: 2px; }
+.th-cur { font-weight: 800; }
+
 /* ===== 按钮 ===== */
 .btn {
   border: 2px solid var(--ink); border-radius: 12px;
