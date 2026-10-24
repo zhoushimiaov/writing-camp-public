@@ -1,7 +1,7 @@
 {
   "name": "写作小能手训练营",
   "short_name": "写作小能手",
-  "description": "只提问、不代笔的小学写作训练营，每天 15 分钟",
+  "description": "只提问、不代笔的写作训练营（三到九年级），每天 15 分钟",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

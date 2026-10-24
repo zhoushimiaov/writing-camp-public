@@ -46,8 +46,8 @@ const LS_KEY = 'writing_camp_v1';
 const MAX_KIDS = 4;
 function defaultKid(over) {
   return Object.assign({
-    name: '', grade: '四年级', avatar: '🦊', xp: 0,
-    dayLog: {}, materials: [], senseCards: [], imitations: [], orals: [], works: [], badges: [], draft: null
+    name: '', grade: '四年级', avatar: '🦊', xp: 0, theme: '',
+    dayLog: {}, materials: [], senseCards: [], imitations: [], orals: [], works: [], badges: [], badgeDates: {}, draft: null
   }, over || {});
 }
 /* 孩子档案数组的键是 k1、k2、k3…（按序号排序） */
@@ -103,6 +103,11 @@ function migrateState(s) {
           : null
       }));
     k.badges = cleanArr(k.badges, b => typeof b === 'string' && BADGES.some(x => x.id === b));
+    k.badgeDates = (k.badgeDates && typeof k.badgeDates === 'object') ? k.badgeDates : {};
+    Object.keys(k.badgeDates).forEach(id => {
+      if (!BADGES.some(x => x.id === id) || typeof k.badgeDates[id] !== 'string') delete k.badgeDates[id];
+    });
+    k.theme = (k.theme && THEMES[k.theme]) ? k.theme : '';
     if (typeof k.xp !== 'number' || !isFinite(k.xp)) k.xp = 0;
     if (!k.dayLog || typeof k.dayLog !== 'object') k.dayLog = {};
     Object.keys(k.dayLog).forEach(dk => {
@@ -232,10 +237,47 @@ function checkBadges() {
   for (const b of BADGES) {
     if (!k.badges.includes(b.id) && b.cond(st)) {
       k.badges.push(b.id);
-      toast('🏅 解锁徽章：' + b.icon + ' ' + b.name + '！');
+      k.badgeDates[b.id] = dateKey();
+      toast('🏅 解锁成就卡：' + b.icon + '「' + b.name + '」，小伙伴「' + b.char + '」加入图鉴！');
       confetti(12);
+      queueAch(b);
     }
   }
+}
+
+/* 成就卡解锁庆祝：排队弹出，有别的弹窗时等它关掉再弹 */
+let achQueue = [];
+function queueAch(b) { achQueue.push(b); setTimeout(achPump, 300); }
+function achPump() {
+  if (!achQueue.length) return;
+  if (document.querySelector('.overlay')) { setTimeout(achPump, 900); return; }
+  const b = achQueue.shift();
+  confetti(22);
+  openModal(
+    '<div class="center"><div class="ach-pop">' + mascot(b.art, 132) + '</div>' +
+    '<h2>🏅 新成就卡到手！</h2>' +
+    '<p class="ach-char">「' + b.icon + ' ' + b.name + '」 · 小伙伴「' + b.char + '」</p>' +
+    '<p class="muted">' + esc(b.desc) + '</p>' +
+    '<button class="btn primary big" data-act="ach-next">收入图鉴！</button></div>', 'celebrate');
+}
+function fmtDateCn(dk) {
+  const p = String(dk).split('-');
+  return (+p[1]) + '月' + (+p[2]) + '日';
+}
+function openAch(id) {
+  const b = BADGES.find(x => x.id === id);
+  if (!b) return;
+  const k = kid();
+  const owned = k.badges.includes(b.id);
+  const d = k.badgeDates[b.id];
+  openModal(
+    '<div class="center">' +
+    '<div class="ach-pop">' + mascot(b.art, 130, !owned) + '</div>' +
+    '<h2>' + b.icon + ' ' + b.name + '</h2>' +
+    '<p class="ach-char">小伙伴：' + (owned ? b.char : '？？？（收集后见面）') + '</p>' +
+    '<p class="muted">' + esc(b.desc) + '</p>' +
+    (owned && d ? '<p class="ach-date">🏅 ' + fmtDateCn(d) + ' 收入图鉴</p>' : '') +
+    '<button class="btn primary" data-act="modal-close">' + (owned ? '真棒！' : '去解锁！') + '</button></div>');
 }
 
 /* ================= 提示 / 特效 / 弹窗 ================= */
@@ -265,7 +307,11 @@ function openModal(html, cls) {
   $('#modal-root').innerHTML = '<div class="overlay"><div class="modal ' + (cls || '') + '">' +
     '<button class="modal-x" data-act="modal-close" aria-label="关闭">✕</button>' + html + '</div></div>';
 }
-function closeModal() { $('#modal-root').innerHTML = ''; }
+function closeModal() {
+  $('#modal-root').innerHTML = '';
+  applyTheme();          /* 取消主题预览时还原 */
+  setTimeout(achPump, 350);
+}
 
 /* ================= 语音朗读（不联网、无需模型） ================= */
 function speak(text) {
@@ -280,6 +326,134 @@ function speak(text) {
 }
 function speakBtn(text) {
   return '<button class="mini-btn speak-btn" data-act="speak" data-text="' + esc(text) + '">🔊 念给我听</button>';
+}
+
+/* ================= 卡通吉祥物（内联 SVG：成就卡小伙伴、教练、空状态） ================= */
+const M_INK = '#5C5266';
+function mascot(spec, size, mono) {
+  const F = c => mono ? '#CFC9DB' : c;      /* mono：未收集的剪影模式 */
+  const S = mono ? '#B4AEC4' : M_INK;
+  const bd = F(spec.body);
+  const st = 'stroke="' + S + '" stroke-linejoin="round" stroke-linecap="round"';
+  let s = '';
+  /* 耳朵（画在身体后面） */
+  if (spec.ear === 'cat') s +=
+    '<polygon points="30,46 27,12 56,34" fill="' + F('#F9DC8F') + '" ' + st + ' stroke-width="4"/>' +
+    '<polygon points="90,46 93,12 64,34" fill="' + F('#F9DC8F') + '" ' + st + ' stroke-width="4"/>';
+  if (spec.ear === 'bear') s +=
+    '<circle cx="34" cy="27" r="14" fill="' + bd + '" ' + st + ' stroke-width="4"/>' +
+    '<circle cx="86" cy="27" r="14" fill="' + bd + '" ' + st + ' stroke-width="4"/>' +
+    '<circle cx="34" cy="27" r="6" fill="' + F('#F7A8B8') + '"/><circle cx="86" cy="27" r="6" fill="' + F('#F7A8B8') + '"/>';
+  if (spec.ear === 'bunny') s +=
+    '<ellipse cx="42" cy="20" rx="9" ry="17" fill="' + bd + '" ' + st + ' stroke-width="4" transform="rotate(-10 42 20)"/>' +
+    '<ellipse cx="78" cy="20" rx="9" ry="17" fill="' + bd + '" ' + st + ' stroke-width="4" transform="rotate(10 78 20)"/>' +
+    '<ellipse cx="42" cy="22" rx="4" ry="10" fill="' + F('#F7A8B8') + '" transform="rotate(-10 42 22)"/>' +
+    '<ellipse cx="78" cy="22" rx="4" ry="10" fill="' + F('#F7A8B8') + '" transform="rotate(10 78 22)"/>';
+  /* 身体 */
+  s += '<rect x="22" y="34" width="76" height="72" rx="30" fill="' + bd + '" ' + st + ' stroke-width="4"/>';
+  /* 腮红 */
+  s += '<ellipse cx="38" cy="77" rx="6.5" ry="4" fill="' + F('#F7A8B8') + '" opacity=".8"/>' +
+       '<ellipse cx="82" cy="77" rx="6.5" ry="4" fill="' + F('#F7A8B8') + '" opacity=".8"/>';
+  /* 脸 */
+  if (spec.face === 'sleepy') s +=
+    '<path d="M39 65 q7 7 14 0" fill="none" ' + st + ' stroke-width="3.5"/>' +
+    '<path d="M67 65 q7 7 14 0" fill="none" ' + st + ' stroke-width="3.5"/>' +
+    '<path d="M55 77 q5 4 10 0" fill="none" ' + st + ' stroke-width="3.5"/>' +
+    '<text x="97" y="28" font-size="15" font-weight="700" fill="' + S + '">z z</text>';
+  else if (spec.face === 'wink') s +=
+    '<circle cx="46" cy="66" r="5.5" fill="' + S + '"/><circle cx="48" cy="64" r="2" fill="#fff"/>' +
+    '<path d="M68 67 q6 -6 12 0" fill="none" ' + st + ' stroke-width="3.5"/>' +
+    '<path d="M52 76 q8 7 16 0" fill="none" ' + st + ' stroke-width="3.5"/>';
+  else if (spec.face === 'wow') s +=
+    '<circle cx="46" cy="65" r="7" fill="' + S + '"/><circle cx="48" cy="63" r="2.4" fill="#fff"/>' +
+    '<circle cx="74" cy="65" r="7" fill="' + S + '"/><circle cx="76" cy="63" r="2.4" fill="#fff"/>' +
+    '<circle cx="60" cy="78" r="4.5" fill="none" ' + st + ' stroke-width="3.5"/>';
+  else s +=  /* happy */
+    '<circle cx="46" cy="66" r="5.5" fill="' + S + '"/><circle cx="48" cy="64" r="2" fill="#fff"/>' +
+    '<circle cx="74" cy="66" r="5.5" fill="' + S + '"/><circle cx="76" cy="64" r="2" fill="#fff"/>' +
+    '<path d="M52 76 q8 7 16 0" fill="none" ' + st + ' stroke-width="3.5"/>';
+  /* 眼镜 */
+  if (spec.glasses) s +=
+    '<circle cx="46" cy="66" r="10.5" fill="none" ' + st + ' stroke-width="3.2"/>' +
+    '<circle cx="74" cy="66" r="10.5" fill="none" ' + st + ' stroke-width="3.2"/>' +
+    '<path d="M56.5 66 h7" ' + st + ' stroke-width="3.2"/>';
+  /* 领结 */
+  if (spec.bowtie) s +=
+    '<polygon points="58,103 43,96 43,111" fill="' + F('#F7A8B8') + '" ' + st + ' stroke-width="3"/>' +
+    '<polygon points="62,103 77,96 77,111" fill="' + F('#F7A8B8') + '" ' + st + ' stroke-width="3"/>' +
+    '<circle cx="60" cy="103" r="3.6" fill="' + F('#C9647F') + '"/>';
+  /* 帽子 */
+  if (spec.hat === 'party') s +=
+    '<polygon points="60,4 47,34 73,34" fill="' + F('#F7A8B8') + '" ' + st + ' stroke-width="4"/>' +
+    '<circle cx="60" cy="5" r="4.5" fill="' + (mono ? '#CFC9DB' : '#fff') + '" ' + st + ' stroke-width="3"/>';
+  if (spec.hat === 'crown') s +=
+    '<polygon points="46,32 46,12 56,24 60,8 64,24 74,12 74,32" fill="' + F('#F9DC8F') + '" ' + st + ' stroke-width="4"/>' +
+    '<circle cx="60" cy="24" r="3" fill="' + F('#F7A8B8') + '"/>';
+  if (spec.hat === 'grad') s +=
+    '<polygon points="60,10 92,24 60,38 28,24" fill="' + F('#8A7F96') + '" ' + st + ' stroke-width="3.5"/>' +
+    '<path d="M92 24 v11" fill="none" ' + st + ' stroke-width="3"/><circle cx="92" cy="38" r="3.5" fill="' + F('#F9DC8F') + '"/>';
+  if (spec.hat === 'detect') s +=
+    '<path d="M46 34 v-13 q14 -9 28 0 v13 z" fill="' + F('#8A7F96') + '" ' + st + ' stroke-width="3.5"/>' +
+    '<ellipse cx="60" cy="34" rx="36" ry="7.5" fill="' + F('#8A7F96') + '" ' + st + ' stroke-width="3.5"/>';
+  /* 手里的道具（画在最前面） */
+  if (spec.item === 'pencil') s +=
+    '<g transform="rotate(-30 88 86)"><rect x="83" y="58" width="10" height="7" rx="2" fill="' + F('#F7A8B8') + '" ' + st + ' stroke-width="3.2"/>' +
+    '<rect x="83" y="65" width="10" height="22" rx="2" fill="' + F('#FFD3B8') + '" ' + st + ' stroke-width="3.2"/>' +
+    '<polygon points="83,87 88,98 93,87" fill="' + F('#F9DC8F') + '" ' + st + ' stroke-width="3.2"/></g>';
+  if (spec.item === 'book') s +=
+    '<rect x="72" y="79" width="30" height="23" rx="4" fill="' + (mono ? '#CFC9DB' : '#fff') + '" ' + st + ' stroke-width="3.8"/>' +
+    '<path d="M87 80 v21" ' + st + ' stroke-width="3"/>' +
+    '<path d="M78 86 h5 M91 86 h5 M78 92 h5 M91 92 h5" ' + st + ' stroke-width="2.5"/>';
+  if (spec.item === 'mic') s +=
+    '<circle cx="90" cy="71" r="10.5" fill="' + F('#C9E0F5') + '" ' + st + ' stroke-width="3.8"/>' +
+    '<path d="M84.5 71 a5.5 5.5 0 0 1 11 0" fill="none" ' + st + ' stroke-width="2.5"/>' +
+    '<path d="M97 79 L105 96" ' + st + ' stroke-width="7"/>' +
+    '<path d="M108 64 l5 -3 M110 71 l6 -1" ' + st + ' stroke-width="2.5"/>';
+  if (spec.item === 'mag') s +=
+    '<circle cx="88" cy="69" r="11" fill="' + (mono ? '#CFC9DB' : '#E3EEFB') + '" ' + st + ' stroke-width="3.8"/>' +
+    '<path d="M96 77 L106 92" ' + st + ' stroke-width="7"/>';
+  if (spec.item === 'trophy') s +=
+    '<path d="M78 61 h26 v7 a13 13 0 0 1 -26 0 z" fill="' + F('#F9DC8F') + '" ' + st + ' stroke-width="3.8"/>' +
+    '<path d="M78 63 h-7 a7 7 0 0 0 8 8" fill="none" ' + st + ' stroke-width="3"/>' +
+    '<path d="M104 63 h7 a7 7 0 0 1 -8 8" fill="none" ' + st + ' stroke-width="3"/>' +
+    '<rect x="87" y="84" width="7" height="8" fill="' + F('#F9DC8F') + '" ' + st + ' stroke-width="3"/>' +
+    '<rect x="79" y="92" width="23" height="6" rx="3" fill="' + F('#F9DC8F') + '" ' + st + ' stroke-width="3"/>' +
+    '<polygon points="91,66 93,70 97,70 94,73 95,77 91,75 87,77 88,73 85,70 89,70" fill="' + (mono ? '#CFC9DB' : '#fff') + '"/>';
+  if (spec.item === 'sword') s +=
+    '<path d="M88 48 L97 57 L90 87 L83 81 Z" fill="' + F('#C9E0F5') + '" ' + st + ' stroke-width="3.5"/>' +
+    '<rect x="77" y="83" width="23" height="7" rx="3.5" fill="' + F('#F9DC8F') + '" ' + st + ' stroke-width="3.5"/>' +
+    '<path d="M88 90 L91 103" ' + st + ' stroke-width="6"/><circle cx="92" cy="105" r="4" fill="' + F('#F9DC8F') + '" ' + st + ' stroke-width="3"/>';
+  if (spec.item === 'mega') s +=
+    '<polygon points="74,79 99,67 99,95 74,89" fill="' + F('#FFD3B8') + '" ' + st + ' stroke-width="3.8"/>' +
+    '<rect x="97" y="64" width="7" height="34" rx="3.5" fill="' + F('#F7A8B8') + '" ' + st + ' stroke-width="3.2"/>' +
+    '<rect x="78" y="90" width="9" height="13" rx="4.5" fill="' + F('#FFD3B8') + '" ' + st + ' stroke-width="3"/>' +
+    '<path d="M109 71 q4 9 0 18" fill="none" ' + st + ' stroke-width="3"/><path d="M114 67 q6 13 0 26" fill="none" ' + st + ' stroke-width="3"/>';
+  if (spec.item === 'fire') s +=
+    '<path d="M96 52 q12 16 10 30 q-1 12 -12 12 q-11 0 -12 -12 q-1 -14 14 -30 z" fill="' + F('#F7A8B8') + '" ' + st + ' stroke-width="3.8"/>' +
+    '<path d="M94 70 q6 9 5 17 q0 6 -5 6 q-5 0 -5 -6 q-1 -8 5 -17 z" fill="' + F('#F9DC8F') + '"/>';
+  if (spec.item === 'pouch') s +=
+    '<polygon points="90,68 107,68 105,77 92,77" fill="' + F('#FFD3B8') + '" ' + st + ' stroke-width="3.5"/>' +
+    '<path d="M86 76 q-9 3 -9 13 q0 16 17 16 q17 0 17 -16 q0 -10 -9 -13 z" fill="' + F('#FFD3B8') + '" ' + st + ' stroke-width="3.8"/>' +
+    '<path d="M88 77 q11 5 21 0" fill="none" ' + st + ' stroke-width="3"/>' +
+    '<circle cx="94" cy="93" r="5.5" fill="' + F('#F9DC8F') + '" ' + st + ' stroke-width="2.8"/>';
+  if (spec.item === 'moon') s +=
+    '<path d="M104 54 a17 17 0 1 0 9 30 a13 13 0 1 1 -9 -30 z" fill="' + F('#F9DC8F') + '" ' + st + ' stroke-width="3.8"/>' +
+    '<polygon points="110,52 111.5,56 115.5,56 112.3,58.5 113.4,62.5 110,60.2 106.6,62.5 107.7,58.5 104.5,56 108.5,56" fill="' + F('#F7A8B8') + '"/>';
+  return '<svg class="mascot" xmlns="http://www.w3.org/2000/svg" width="' + (size || 64) + '" height="' + (size || 64) + '" viewBox="0 0 120 120" aria-hidden="true">' + s + '</svg>';
+}
+
+/* ================= 马卡龙主题（跟随当前孩子） ================= */
+function applyTheme() {
+  const th = (kid().theme && THEMES[kid().theme]) ? kid().theme : 'sakura';
+  document.documentElement.dataset.theme = th;
+  const m = document.querySelector('meta[name="theme-color"]');
+  if (m) m.setAttribute('content', THEMES[th].paper);
+}
+function themeRow(act, idx, cur) {
+  return '<div class="th-row">' + Object.keys(THEMES).map(t =>
+    '<button class="th-chip' + (t === cur ? ' on' : '') + '" data-act="' + act + '" data-i="' + idx + '" data-th="' + t + '">' +
+    '<span class="th-dot" style="background:' + THEMES[t].paper + '"></span><span class="th-dot" style="background:' + THEMES[t].sw + '"></span>' +
+    THEMES[t].name + '</button>').join('') + '</div>';
 }
 
 /* ================= 页面内语音输入（Safari/Edge 支持；不支持时自动隐藏） ================= */
@@ -395,7 +569,7 @@ function geminiErr(status, j) {
   if (status === 429) return '免费额度今天用完了，明天再试或换一个服务';
   return msg;
 }
-const OCR_PROMPT = '图片里是小学生手写的中文文字。请逐字转录成电子文本：保持原有的文字和标点，不要修改、不要润色、不要添加任何解释或回答，只输出转录出的纯文本。如果图片里没有手写文字，只输出：空';
+const OCR_PROMPT = '图片里是孩子手写的中文文字。请逐字转录成电子文本：保持原有的文字和标点，不要修改、不要润色、不要添加任何解释或回答，只输出转录出的纯文本。如果图片里没有手写文字，只输出：空';
 async function ocrRequest(dataUrl) { return requestAI(OCR_PROMPT, dataUrl, 60000); }
 function noKeyGuide() {
   openModal(
@@ -424,7 +598,7 @@ function ocrTest() {
 /* ================= AI 作文批改（只点评，绝不代笔） ================= */
 function buildReviewPrompt(w, k) {
   const cat = CATEGORIES[w.cat] || { name: '作文', scorePoints: ['真情实感', '细节描写'] };
-  return '请批改一篇' + k.grade + '小学生的' + cat.name + '作文《' + w.title + '》。\n' +
+  return '请批改一篇' + k.grade + '学生的' + cat.name + '作文《' + w.title + '》。\n' +
   '作文全文：\n"""\n' + w.text + '\n"""\n' +
   '批改规则：\n' +
   '1. 你是作文教练，只点评，绝不代笔：禁止替学生写出新的句子或范文。\n' +
@@ -560,18 +734,21 @@ function navTo(tab) {
 }
 
 /* ================= 渲染入口 ================= */
-function render() { renderHeader(); renderTabs(); renderMain(); }
+function render() { applyTheme(); renderHeader(); renderTabs(); renderMain(); }
 function renderMain() {
   const fns = { today: renderToday, coach: renderCoach, camp: renderCamp, works: renderWorks, parent: renderParent };
   $('#main').innerHTML = '<div class="wrap">' + (fns[S.tab] || renderToday)() + '</div>';
 }
 
-/* ===== 按年级的差异化侧重提示（四年级重"有话可说"，五六年级重"细节拉差距"） ===== */
+/* ===== 按年级的差异化侧重提示（中低年级重"有话可说"，高年级和初中重"文体和细节"） ===== */
 const GRADE_FOCUS = {
   '三年级': ['👝 素材本（每天 30 秒记一句）', '🎙️ 口述挑战'],
   '四年级': ['👝 素材本（每天 30 秒记一句）', '🎙️ 口述挑战'],
   '五年级': ['📖 教材同步题', '🕵️ 五感放大器（细节拉差距）'],
-  '六年级': ['📖 教材同步题', '✍️ 心理和动作细节']
+  '六年级': ['📖 教材同步题', '✍️ 心理和动作细节'],
+  '七年级': ['🖋 记事写人抓细节', '📖 教材同步题'],
+  '八年级': ['🔎 说明文和读后感', '🎤 演讲稿练起来'],
+  '九年级': ['⚖️ 议论文：观点 + 证据', '📖 教材同步题']
 };
 
 /* ================= 今日页 ================= */
@@ -590,10 +767,13 @@ function renderToday() {
       (dayActive(k, dk) ? '🔥' : '·') + '</span><span class="wk-label">' + (i === 0 ? '今天' : WK[d.getDay()]) + '</span></div>';
   }
 
-  const badgeRow = BADGES.map(b =>
-    '<div class="badge' + (k.badges.includes(b.id) ? ' owned' : '') + '" title="' + esc(b.desc) + '">' +
-    '<span class="b-icon">' + b.icon + '</span><span class="b-name">' + b.name + '</span></div>'
-  ).join('');
+  const badgeRow = BADGES.map(b => {
+    const owned = k.badges.includes(b.id);
+    return '<button class="ach-card' + (owned ? ' owned' : '') + '" data-act="ach-open" data-id="' + b.id + '" title="' + esc(b.desc) + '">' +
+      '<span class="ach-mascot">' + mascot(b.art, 58, !owned) + '</span>' +
+      '<span class="ach-name">' + b.name + '</span>' +
+      '<span class="ach-sub">' + (owned ? b.char : '？？？') + '</span></button>';
+  }).join('');
 
   return '' +
   '<section class="card hero">' +
@@ -621,8 +801,8 @@ function renderToday() {
     '<button class="card quick" data-act="jump" data-target="#sec-oral"><span class="q-emoji">🎙️</span><span class="q-t">口述挑战</span><span class="q-d">先说后写，练一分钟</span></button>' +
   '</div>' +
 
-  '<section class="card"><h3 class="sec-t">🏅 徽章墙 <span class="muted small">（' + k.badges.length + ' / ' + BADGES.length + '）</span></h3>' +
-    '<div class="badge-grid">' + badgeRow + '</div></section>';
+  '<section class="card"><h3 class="sec-t">🏆 成就图鉴 <span class="muted small">（已收集 ' + k.badges.length + ' / ' + BADGES.length + ' 位小伙伴，点卡片看大图）</span></h3>' +
+    '<div class="ach-grid">' + badgeRow + '</div></section>';
 }
 
 /* ================= 写作教练 ================= */
@@ -668,19 +848,20 @@ function renderCoachTopic() {
   }
   if (COV.view === 'book') {
     const myGrade = (kid().grade || '').replace('年级', '');
+    const myBook = Math.max(0, TEXTBOOK_TOPICS.findIndex(g => g.grade.indexOf(myGrade) === 0));
     return stepBanner() + head +
     '<section class="card">' +
       '<h2>📖 教材同步 · 挑一个题目</h2>' +
-      '<p class="muted small">按语文书的单元习作整理（统编版四~六年级）。上海是五四学制、进度略有不同，但题材全覆盖——学校布置哪个题目，来这里都能练。</p>' +
+      '<p class="muted small">按语文书的单元习作整理（统编版三~九年级）。上海六年级（预备班）用的正是全国六年级教材内容，初中七~九年级对应全国统编初中写作单元；各地进度略有不同，但题材全覆盖。</p>' +
       '<div class="topic-grid">' + TEXTBOOK_TOPICS.map((g, i) => {
         const mine = g.grade.indexOf(myGrade) === 0;
         return '<button class="btn topic-btn' + (COV.book === i ? ' on' : '') + '" data-act="book-grade" data-i="' + i + '">' +
           (mine ? '⭐ ' : '') + g.grade + '</button>';
       }).join('') + '</div>' +
-      '<div class="topic-grid">' + TEXTBOOK_TOPICS[COV.book || 0].topics.map(t =>
+      '<div class="topic-grid">' + TEXTBOOK_TOPICS[COV.book != null ? COV.book : myBook].topics.map(t =>
         '<button class="btn topic-btn" data-act="pick-topic" data-cat="' + t[1] + '" data-topic="' + esc(t[0]) + '">' +
         (CATEGORIES[t[1]] ? CATEGORIES[t[1]].icon : '📔') + ' ' + esc(t[0]) + '</button>').join('') + '</div>' +
-      '<p class="muted small">书信、读后感、倡议书这类应用文，教练的问题会帮你回忆内容；具体格式以老师课堂教的要求为准。</p>' +
+      '<p class="muted small">书信、读后感、演讲稿、新闻这类应用文，教练的问题会帮你组织内容；具体格式以老师课堂教的要求为准。</p>' +
     '</section>';
   }
   if (COV.view === 'cats') {
@@ -719,6 +900,7 @@ function renderCoachQuestion() {
   const dots = arr.map((_, i) => '<i class="' + (i <= CO.qi ? 'on' : '') + '"></i>').join('');
   return stepBanner() +
   '<section class="card center q-card">' +
+    '<div class="coach-mascot">' + mascot(MASCOT_COACH, 78) + '</div>' +
     '<div class="q-phase">' + (isWarm ? '🗣️ 热身：先说一说' : '🔋 攒弹药：教练提问') + '　<i class="q-dots">' + dots + '</i></div>' +
     '<h2 class="q-text">' + esc(q) + '</h2>' +
     speakBtn(q) +
@@ -783,8 +965,8 @@ function renderCoachWrite() {
     '</aside>' +
     '<section class="card editor-col">' +
       '<input id="co-title" class="title-input" maxlength="40" placeholder="给文章起个题目…" value="' + esc(CO.title || '') + '">' +
-      '<div class="enc-line">' + ENCOURAGE[CO.encI % ENCOURAGE.length] +
-      '　<button class="mini-btn" data-act="enc-next">换一句</button></div>' +
+      '<div class="enc-line"><span class="enc-mascot">' + mascot(MASCOT_COACH, 36) + '</span><span>' + ENCOURAGE[CO.encI % ENCOURAGE.length] +
+      '　<button class="mini-btn" data-act="enc-next">换一句</button></span></div>' +
       '<textarea id="co-text" rows="14" placeholder="从哪句开始都行。可以先把刚才的回答搬过来，再慢慢改…">' + esc(CO.text || '') + '</textarea>' +
       '<div class="editor-foot">' +
         '<span class="cc" id="cc">' + chars(CO.text) + ' 字</span>' +
@@ -950,7 +1132,7 @@ function renderCamp() {
     '<span class="mat-text">' + esc(m.text) + '</span>' +
     '<span class="mat-date muted small">' + m.date.slice(5) + '</span>' +
     '<button class="x" data-act="mat-del" data-id="' + m.id + '" title="删除">✕</button></div>').join('')
-    : '<p class="muted">空空的。操场上的怪事、同学说的怪话、路边的小狗……都算！</p>';
+    : '<div class="empty-mascot">' + mascot(MASCOT_SLEEPY, 54) + '</div><p class="muted center">空空的。操场上的怪事、同学说的怪话、路边的小狗……都算！</p>';
 
   const senseCards = k.senseCards.slice().reverse();
   const senseList = senseCards.length ? senseCards.map(c => {
@@ -1155,7 +1337,8 @@ function shareCardHtml(p) {
 function renderWorks() {
   const k = kid();
   if (!k.works.length) {
-    return '<section class="card center"><h2>📚 作品集还是空的</h2>' +
+    return '<section class="card center"><div class="empty-mascot">' + mascot(MASCOT_HOPEN, 72) + '</div>' +
+    '<h2>📚 作品集还是空的</h2>' +
     '<p class="muted">第一篇作品就从写作教练开始吧——不用写好，先写完！</p>' +
     '<button class="btn primary big" data-act="qa-go" data-where="coach">🖋 去写作教练</button></section>';
   }
@@ -1317,7 +1500,7 @@ function renderParent() {
 }
 
 /* ================= 弹窗：首次设置 / 修改信息 ================= */
-const GRS = ['三年级', '四年级', '五年级', '六年级'];
+const GRS = ['三年级', '四年级', '五年级', '六年级', '七年级', '八年级', '九年级'];
 let OBK = null, SETK = null;
 function obSync() {
   OBK.forEach((k, i) => {
@@ -1330,8 +1513,8 @@ function showOnboarding() {
   if (!OBK) {
     const ids = kidIds(S);
     OBK = ids.length
-      ? ids.map(id => ({ name: S.kids[id].name, grade: S.kids[id].grade, avatar: S.kids[id].avatar }))
-      : [{ name: '', grade: '四年级', avatar: '🦊' }];
+      ? ids.map(id => ({ name: S.kids[id].name, grade: S.kids[id].grade, avatar: S.kids[id].avatar, theme: S.kids[id].theme || 'sakura' }))
+      : [{ name: '', grade: '四年级', avatar: '🦊', theme: 'sakura' }];
   }
   const card = (k, i) =>
     '<div class="ob-kid"><h3>孩子 ' + (i + 1) +
@@ -1339,8 +1522,10 @@ function showOnboarding() {
     '<div class="av-row">' + AVATARS.map(a =>
       '<button class="av-chip' + (a === k.avatar ? ' on' : '') + '" data-act="ob-av" data-i="' + i + '" data-av="' + a + '">' + a + '</button>').join('') + '</div>' +
     '<input id="ob-name-' + i + '" maxlength="12" placeholder="名字或昵称" value="' + esc(k.name) + '">' +
-    '<select id="ob-grade-' + i + '">' + GRS.map(g => '<option' + (g === k.grade ? ' selected' : '') + '>' + g + '</option>').join('') + '</select></div>';
+    '<select id="ob-grade-' + i + '">' + GRS.map(g => '<option' + (g === k.grade ? ' selected' : '') + '>' + g + '</option>').join('') + '</select>' +
+    '<div class="ob-theme"><span class="small muted">🎨 ' + '专属配色：' + '</span>' + themeRow('ob-theme', i, k.theme || 'sakura') + '</div></div>';
   openModal(
+    '<div class="center ob-mascot">' + mascot(MASCOT_COACH, 92) + '</div>' +
     '<div class="center"><h2>👋 欢迎来到写作小能手训练营</h2>' +
     '<p class="muted">给孩子建个小档案吧——只有一个孩子就填一位（以后在家长角随时能改）</p></div>' +
     '<div class="ob-grid">' + OBK.map(card).join('') + '</div>' +
@@ -1357,14 +1542,15 @@ function setSync() {
   });
 }
 function showSettings() {
-  if (!SETK) SETK = kidIds(S).map(id => ({ id: id, name: S.kids[id].name, grade: S.kids[id].grade, avatar: S.kids[id].avatar }));
+  if (!SETK) SETK = kidIds(S).map(id => ({ id: id, name: S.kids[id].name, grade: S.kids[id].grade, avatar: S.kids[id].avatar, theme: S.kids[id].theme || 'sakura' }));
   const card = (k, i) =>
     '<div class="ob-kid"><h3>孩子 ' + (i + 1) +
       (SETK.length > 1 ? ' <button class="mini-btn" data-act="set-del" data-i="' + i + '">✕ 移除</button>' : '') + '</h3>' +
     '<div class="av-row">' + AVATARS.map(a =>
       '<button class="av-chip' + (a === k.avatar ? ' on' : '') + '" data-act="set-av" data-i="' + i + '" data-av="' + a + '">' + a + '</button>').join('') + '</div>' +
     '<input id="set-name-' + i + '" maxlength="12" placeholder="名字或昵称" value="' + esc(k.name) + '">' +
-    '<select id="set-grade-' + i + '">' + GRS.map(g => '<option' + (g === k.grade ? ' selected' : '') + '>' + g + '</option>').join('') + '</select></div>';
+    '<select id="set-grade-' + i + '">' + GRS.map(g => '<option' + (g === k.grade ? ' selected' : '') + '>' + g + '</option>').join('') + '</select>' +
+    '<div class="ob-theme"><span class="small muted">🎨 专属配色：</span>' + themeRow('set-theme', i, k.theme || 'sakura') + '</div></div>';
   openModal(
     '<h2 class="center">✏️ 修改孩子信息</h2>' +
     '<div class="ob-grid">' + SETK.map(card).join('') + '</div>' +
@@ -1409,7 +1595,11 @@ document.addEventListener('click', e => {
     /* 教练 */
     case 'pick-cat': COV = { view: 'topics', cat: el.dataset.cat }; renderMain(); break;
     case 'pick-cats': COV = { view: 'cats', cat: null }; renderMain(); break;
-    case 'pick-book': COV = { view: 'book', cat: null, book: COV.book || 0 }; renderMain(); break;
+    case 'pick-book': {
+      const myGrade = (kid().grade || '').replace('年级', '');
+      COV = { view: 'book', cat: null, book: COV.book != null ? COV.book : Math.max(0, TEXTBOOK_TOPICS.findIndex(g => g.grade.indexOf(myGrade) === 0)) };
+      renderMain(); break;
+    }
     case 'pick-brain': COV = { view: 'brain', cat: null }; renderMain(); break;
     case 'pick-brain-topic': {
       const b = BRAIN_TOPICS.find(x => x.id === el.dataset.id);
@@ -1574,6 +1764,20 @@ document.addEventListener('click', e => {
 
     /* 弹窗 */
     case 'modal-close': closeModal(); break;
+    case 'ach-open': openAch(el.dataset.id); break;
+    case 'ach-next': closeModal(); break;
+    case 'ob-theme': {
+      const i = +el.dataset.i; obSync();
+      OBK[i].theme = el.dataset.th;
+      document.documentElement.dataset.theme = el.dataset.th;   /* 即时预览 */
+      showOnboarding(); break;
+    }
+    case 'set-theme': {
+      const i = +el.dataset.i; setSync();
+      SETK[i].theme = el.dataset.th;
+      document.documentElement.dataset.theme = el.dataset.th;   /* 即时预览 */
+      showSettings(); break;
+    }
     case 'ob-av': { const i = +el.dataset.i; obSync(); OBK[i].avatar = el.dataset.av; showOnboarding(); break; }
     case 'ob-add': {
       obSync();
@@ -1591,6 +1795,7 @@ document.addEventListener('click', e => {
         S.kids[id].name = ok.name.trim();
         S.kids[id].grade = ok.grade;
         S.kids[id].avatar = ok.avatar;
+        S.kids[id].theme = ok.theme || 'sakura';
       });
       if (!S.kids[S.cur]) S.cur = kidIds(S)[0];
       S.onboarded = true; OBK = null;
@@ -1623,6 +1828,7 @@ document.addEventListener('click', e => {
         S.kids[id].name = k.name.trim();
         S.kids[id].grade = k.grade;
         S.kids[id].avatar = k.avatar;
+        S.kids[id].theme = k.theme || 'sakura';
       });
       if (!S.kids[S.cur]) S.cur = kidIds(S)[0];
       SETK = null; save(); closeModal(); render(); toast('已保存 ✅'); break;
@@ -1719,7 +1925,7 @@ document.addEventListener('keydown', e => {
 window.addEventListener('beforeunload', persistCoachDraft);
 
 /* ================= 启动 ================= */
-const APP_VERSION = 'v1.0';
+const APP_VERSION = 'v1.1';
 (function renderVersionBadge() {
   const b = document.createElement('div');
   b.id = 'ver-badge';
@@ -1729,6 +1935,7 @@ const APP_VERSION = 'v1.0';
 })();
 /* 数据持久化授权：尽量阻止浏览器在空间不足时自动清掉 localStorage（审查设计层修复） */
 if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
+applyTheme();   /* 启动即套上当前孩子的专属配色 */
 
 /* 带 ?w= 分享参数时：只显示只读作品卡（微信里打开的样子） */
 parseSharePayload().then(p => {

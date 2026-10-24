@@ -188,6 +188,93 @@ const CATEGORIES = {
       '感悟一句就够，别说教',
       '把它写在开头或结尾'
     ]
+  },
+  argue: {
+    name: '议论', icon: '⚖️',
+    scorePoints: ['观点一句话说清楚，不跑题', '至少两个理由支持观点', '每个理由都有例子或事实', '想到别人会怎么反驳，并回应', '结尾呼应观点，有力量'],
+    openEnd: {
+      open: ['开门见山：我坚决认为……', '从一个现象说起：为什么大家都……', '先摆一个反面说法，再反驳它'],
+      end: ['再说一遍我的观点……', '如果你也遇到过，你会怎么选？', '改变，就从这件小事开始']
+    },
+    warm: [
+      '你想让别人接受什么想法？一句话说说。',
+      '身边有人不同意这个想法吗？他们怎么说？',
+      '你自己是怎么确信这个想法的？'
+    ],
+    qs: [
+      '用一句话说出你的观点，别带"可能""大概"。',
+      '第一个理由是什么？配上一个真实的例子。',
+      '第二个理由是什么？再举一个例子，或一个数字。',
+      '反对你的人最可能说什么？',
+      '你怎么回应那个反对的理由？',
+      '结尾用一句话把观点再钉一遍，怎么说最有力量？'
+    ],
+    qHints: [
+      '观点越明确越好，别两头讨好',
+      '例子要真实，最好是你亲历的',
+      '数字和事实比形容词有说服力',
+      '敢写反面，显得你想得全面',
+      '先承认对方一小点合理，再指出关键问题',
+      '结尾别拖，重申观点就收'
+    ]
+  },
+  explain: {
+    name: '说明', icon: '🔎',
+    scorePoints: ['抓住事物最主要的特点', '有清楚的说明顺序', '用上列数字、打比方、作比较', '语言准确，不含糊', '读完别人真的了解了它'],
+    openEnd: {
+      open: ['先抛问题：你知道……吗？', '从一个误会说起', '直接亮特点：____最大的特点是……'],
+      end: ['一句话总结它的特点', '邀请对方亲自来看看、试试', '留下一个想了解更多的问题']
+    },
+    warm: [
+      '你要介绍什么？',
+      '它最与众不同的一个特点是什么？',
+      '假如读者对它一无所知，最想知道什么？'
+    ],
+    qs: [
+      '它整体是什么样的？一句话概括。',
+      '可以从哪几个方面介绍它？一、二、三列出来。',
+      '每个方面有什么具体的细节或数字？',
+      '打个什么比方，别人一听就懂？',
+      '大家最容易误会它什么？怎么澄清？',
+      '按什么顺序讲最清楚？从整体到局部，还是从过去到现在？'
+    ],
+    qHints: [
+      '先说"是什么"，再说"怎么样"',
+      '挑两三个方面讲透，别贪多',
+      '准确的数字最让人信服',
+      '比喻要贴近生活',
+      '澄清一个误会，文章立刻有用',
+      '顺序定了，文章就立住了'
+    ]
+  },
+  speech: {
+    name: '演讲', icon: '🎤',
+    scorePoints: ['开头三句话就抓住听众', '观点鲜明，一句话站得住', '有故事、有例子，不空洞', '和听众有互动（提问、呼告）', '结尾有号召力'],
+    openEnd: {
+      open: ['先讲一个小场景，把听众拉进来', '先问听众一个问题', '先亮观点：今天我想说……'],
+      end: ['发出号召：让我们一起……', '把问题抛回给听众', '用一句有力的话收尾']
+    },
+    warm: [
+      '你要对谁讲？他们在乎什么？',
+      '你想让他们听完做什么？',
+      '用一句话说说你的主题。'
+    ],
+    qs: [
+      '开头第一句怎么说，能让大家抬头看你？',
+      '你的主张是什么？一句话说清。',
+      '讲一个自己的或身边的故事来支撑它。',
+      '中间怎么和听众互动？提一个问题？带一句口号？',
+      '可能有人不赞成，你怎么说服他们？',
+      '结尾怎么号召大家行动？'
+    ],
+    qHints: [
+      '开场别客套，直接进故事或问题',
+      '主张要能一句话喊出来',
+      '故事要具体到人和事',
+      '对着人说话，多用"你们""我们"',
+      '一句让步，三句坚定',
+      '结尾越短越有力'
+    ]
   }
 };
 
@@ -198,7 +285,10 @@ const TOPICS = {
   object: ['我的心爱之物', '一道让我流口水的菜', '我的宝贝装备', '校园里的一棵树', '我的书包/文具'],
   scene: ['秋天的校园', '雨后的操场', '傍晚的天空', '菜市场', '窗外的风景', '小区的夜晚'],
   imagine: ['二十年后的我', '假如我有一朵七色花', '我的奇思妙想', '一本会说话的书', '未来的一天'],
-  free: ['今日小记', '周末见闻', '心情日记', '一条新闻的感想']
+  free: ['今日小记', '周末见闻', '心情日记', '一条新闻的感想'],
+  argue: ['我看手机该不该带进校园', '分数能代表一个人吗', '我想对____说"不"', '假期应该怎么过', '该不该给同学起外号'],
+  explain: ['介绍一种你喜欢的小吃', '我的家乡在哪里', '一本书是怎么做成的', '介绍一个你拿手的玩法', '校园里最容易被忽略的角落'],
+  speech: ['班干部竞选演讲', '我想对爸妈说的心里话', '保护环境，从我做起', '我最想推荐的一样东西', '毕业前的最后一次演讲']
 };
 
 /* ===== 仿写句库（技巧 / 原句 / 结构 / 换主角提示） ===== */
@@ -260,10 +350,19 @@ const ORAL_CARDS = [
   { id: 'o18', type: '比喻擂台', title: '不许说"累"的累', challenge: '描述今天最累的时刻，整段话不能出现"累"这个字。', tips: ['腿是什么感觉', '眼皮和脑袋在干嘛', '倒在床上的那一秒'] }
 ];
 
-/* ===== 教材同步题库（统编版四~六年级单元习作，按题材挂到提问链上）
-   上海为五四学制：小学五年、六年级是预备班；进度与六三制略有不同
-   （如五年级下册已含"难忘小学生活"），但以下题目按题材全覆盖 ===== */
+/* ===== 教材同步题库（统编版三~九年级单元习作/写作单元，按题材挂到提问链上）
+   上海为五四学制：小学五年，六年级是预备班——预备班用的正是全国六年级教材内容；
+   初中七~九年级对应全国统编初中写作单元。各地进度略有出入，按题材全覆盖。
+   应用文（书信/读后感/演讲稿/新闻）教练的问题帮组织内容，格式以老师课堂要求为准。 */
 const TEXTBOOK_TOPICS = [
+  { grade: '三年级上', topics: [
+    ['猜猜他是谁', 'person'], ['写日记', 'free'], ['我来编童话', 'imagine'], ['续写故事', 'imagine'],
+    ['我们眼中的缤纷世界', 'scene'], ['这儿真美', 'scene'], ['我有一个想法', 'free'], ['那次玩得真高兴', 'event']
+  ]},
+  { grade: '三年级下', topics: [
+    ['我的植物朋友', 'object'], ['看图画，写一写', 'free'], ['中华传统节日', 'free'], ['我做了一项小实验', 'explain'],
+    ['奇妙的想象', 'imagine'], ['身边那些有特点的人', 'person'], ['国宝大熊猫', 'explain'], ['这样想象真有趣', 'imagine']
+  ]},
   { grade: '四年级上', topics: [
     ['推荐一个好地方', 'scene'], ['小小"动物园"', 'person'], ['写观察日记', 'scene'], ['我和____过一天', 'imagine'],
     ['生活万花筒', 'event'], ['记一次游戏', 'event'], ['写信', 'free'], ['我的心儿怦怦跳', 'event']
@@ -274,19 +373,43 @@ const TEXTBOOK_TOPICS = [
   ]},
   { grade: '五年级上', topics: [
     ['我的心爱之物', 'object'], ['"漫画"老师', 'person'], ['缩写故事', 'free'], ['二十年后的家乡', 'imagine'],
-    ['介绍一种事物', 'object'], ['我想对您说', 'free'], ['______即景', 'scene'], ['推荐一本书', 'free']
+    ['介绍一种事物', 'explain'], ['我想对您说', 'speech'], ['______即景', 'scene'], ['推荐一本书', 'free']
   ]},
   { grade: '五年级下', topics: [
     ['那一刻，我长大了', 'event'], ['写读后感', 'free'], ['他____了', 'person'], ['形形色色的人', 'person'],
-    ['神奇的探险之旅', 'imagine'], ['中国的世界文化遗产', 'scene'], ['漫画的启示', 'free'], ['难忘小学生活', 'event']
+    ['神奇的探险之旅', 'imagine'], ['中国的世界文化遗产', 'explain'], ['漫画的启示', 'argue'], ['难忘小学生活', 'event']
   ]},
   { grade: '六年级上', topics: [
     ['变形记', 'imagine'], ['多彩的活动', 'event'], ['______让生活更美好', 'free'], ['笔尖流出的故事', 'imagine'],
-    ['围绕中心意思写', 'free'], ['学写倡议书', 'free'], ['我的拿手好戏', 'event'], ['有你，真好', 'person']
+    ['围绕中心意思写', 'free'], ['学写倡议书', 'speech'], ['我的拿手好戏', 'event'], ['有你，真好', 'person']
   ]},
   { grade: '六年级下', topics: [
-    ['家乡的风俗', 'scene'], ['写作品梗概', 'free'], ['让真情自然流露', 'event'], ['心愿', 'free'],
+    ['家乡的风俗', 'scene'], ['写作品梗概', 'free'], ['让真情自然流露', 'event'], ['心愿', 'speech'],
     ['插上科学的翅膀飞', 'imagine'], ['难忘小学生活', 'event']
+  ]},
+  { grade: '七年级上', topics: [
+    ['观察起步：窗外的一处风景', 'scene'], ['学会记事：一件小事', 'event'], ['写人抓特点：我的同桌', 'person'],
+    ['思路要清晰：我的一天', 'event'], ['突出中心：____让我着迷', 'free'], ['联想和想象：假如我是____', 'imagine']
+  ]},
+  { grade: '七年级下', topics: [
+    ['写出人物的精神：我最敬佩的人', 'person'], ['学习抒情：那一刻，我____了', 'event'], ['抓住细节：难忘的一个瞬间', 'event'],
+    ['怎样选材：我的家风', 'free'], ['文从字顺：介绍一个地方', 'scene'], ['语言简明：说明一件事', 'explain']
+  ]},
+  { grade: '八年级上', topics: [
+    ['学写消息：班级新闻一则', 'free'], ['学写传记：我的小传', 'person'], ['描写景物：四季的校园', 'scene'],
+    ['语言要连贯：____的故事', 'event'], ['说明事物要抓特征：一道美食', 'explain'], ['表达要得体：写一封建议书', 'speech']
+  ]},
+  { grade: '八年级下', topics: [
+    ['学习仿写：仿一篇喜欢的课文', 'free'], ['说明的顺序：介绍我的校园', 'explain'], ['学写读后感：最近读的一本书', 'free'],
+    ['撰写演讲稿：我想对你们说', 'speech'], ['学写游记：一次出游', 'scene'], ['学写故事：编一个故事', 'imagine']
+  ]},
+  { grade: '九年级上', topics: [
+    ['尝试创作：写一首小诗', 'imagine'], ['观点要明确：我看____', 'argue'], ['议论要言之有据：说"坚持"', 'argue'],
+    ['学写缩写：缩写一个故事', 'free'], ['论证要合理：成绩能代表一切吗', 'argue'], ['学习改写：换个视角讲课文', 'imagine']
+  ]},
+  { grade: '九年级下', topics: [
+    ['学习扩写：把一句话扩成故事', 'imagine'], ['审题立意：从"窗外"想三个立意', 'free'], ['布局谋篇：____二三事', 'person'],
+    ['修改润色：改自己的一篇旧文', 'free'], ['有创意地表达：一次难忘的经历', 'event']
   ]}
 ];
 
@@ -401,21 +524,48 @@ const RANKS = [
   { min: 1000, name: '大文豪', icon: '🐉' }
 ];
 
-/* ===== 徽章 ===== */
+/* ===== 徽章（成就图鉴：每张成就卡有一位专属卡通小伙伴） ===== */
 const BADGES = [
-  { id: 'first_work',  icon: '🎉', name: '初试锋芒', desc: '完成第一篇作品', cond: s => s.works >= 1 },
-  { id: 'ten_works',   icon: '📚', name: '十篇达成', desc: '累计完成 10 篇作品', cond: s => s.works >= 10 },
-  { id: 'streak7',     icon: '🔥', name: '七日不辍', desc: '连续 7 天完成每日任务', cond: s => s.streak >= 7 },
-  { id: 'streak30',    icon: '🗡️', name: '满月大侠', desc: '连续 30 天完成每日任务', cond: s => s.streak >= 30 },
-  { id: 'material10',  icon: '👝', name: '素材小富', desc: '素材本存满 10 条', cond: s => s.materials >= 10 },
-  { id: 'material50',  icon: '🏦', name: '素材大亨', desc: '素材本存满 50 条', cond: s => s.materials >= 50 },
-  { id: 'imitate10',   icon: '✍️', name: '仿写高手', desc: '完成 10 句仿写', cond: s => s.imitations >= 10 },
-  { id: 'oral10',      icon: '🎙️', name: '口述达人', desc: '完成 10 次口述挑战', cond: s => s.orals >= 10 },
-  { id: 'sense10',     icon: '🕵️', name: '五感侦探', desc: '完成 10 张五感卡', cond: s => s.senses >= 10 },
-  { id: 'chars1000',   icon: '🏆', name: '千字少年', desc: '累计写作 1000 字', cond: s => s.chars >= 1000 },
-  { id: 'chars3000',   icon: '⚔️', name: '三千字大将', desc: '累计写作 3000 字', cond: s => s.chars >= 3000 },
-  { id: 'share5',      icon: '📣', name: '家庭之声', desc: '把作品分享给家人 5 次', cond: s => s.shares >= 5 }
+  { id: 'first_work',  icon: '🎉', name: '初试锋芒', char: '小笔星', desc: '完成第一篇作品', cond: s => s.works >= 1,
+    art: { body: '#F9DC8F', ear: 'bear', hat: 'party', item: 'pencil', face: 'happy' } },
+  { id: 'ten_works',   icon: '📚', name: '十篇达成', char: '书宝宝', desc: '累计完成 10 篇作品', cond: s => s.works >= 10,
+    art: { body: '#A8DCC9', ear: 'cat', hat: 'grad', item: 'book', face: 'happy' } },
+  { id: 'streak7',     icon: '🔥', name: '七日不辍', char: '火苗仔', desc: '连续 7 天完成每日任务', cond: s => s.streak >= 7,
+    art: { body: '#FFD3B8', ear: 'none', item: 'fire', face: 'wow' } },
+  { id: 'streak30',    icon: '🗡️', name: '满月大侠', char: '月亮兔', desc: '连续 30 天完成每日任务', cond: s => s.streak >= 30,
+    art: { body: '#CFC4E8', ear: 'bunny', item: 'moon', face: 'happy' } },
+  { id: 'material10',  icon: '👝', name: '素材小富', char: '布袋仔', desc: '素材本存满 10 条', cond: s => s.materials >= 10,
+    art: { body: '#FFE3C4', ear: 'bear', item: 'pouch', face: 'happy' } },
+  { id: 'material50',  icon: '🏦', name: '素材大亨', char: '金满堂', desc: '素材本存满 50 条', cond: s => s.materials >= 50,
+    art: { body: '#F9DC8F', hat: 'crown', item: 'pouch', face: 'happy' } },
+  { id: 'imitate10',   icon: '✍️', name: '仿写高手', char: '复制猫', desc: '完成 10 句仿写', cond: s => s.imitations >= 10,
+    art: { body: '#F7A8B8', ear: 'cat', item: 'pencil', face: 'wink' } },
+  { id: 'oral10',      icon: '🎙️', name: '口述达人', char: '小歌喉', desc: '完成 10 次口述挑战', cond: s => s.orals >= 10,
+    art: { body: '#C9E0F5', hat: 'party', item: 'mic', face: 'wow' } },
+  { id: 'sense10',     icon: '🕵️', name: '五感侦探', char: '侦探喵', desc: '完成 10 张五感卡', cond: s => s.senses >= 10,
+    art: { body: '#A8DCC9', ear: 'cat', hat: 'detect', item: 'mag', face: 'happy' } },
+  { id: 'chars1000',   icon: '🏆', name: '千字少年', char: '千字郎', desc: '累计写作 1000 字', cond: s => s.chars >= 1000,
+    art: { body: '#FFF3D2', ear: 'bunny', item: 'trophy', face: 'happy' } },
+  { id: 'chars3000',   icon: '⚔️', name: '三千字大将', char: '剑心侠', desc: '累计写作 3000 字', cond: s => s.chars >= 3000,
+    art: { body: '#F7A8B8', ear: 'bear', item: 'sword', face: 'happy' } },
+  { id: 'share5',      icon: '📣', name: '家庭之声', char: '小喇叭', desc: '把作品分享给家人 5 次', cond: s => s.shares >= 5,
+    art: { body: '#FFD3B8', ear: 'bunny', item: 'mega', face: 'wink' } }
 ];
+
+/* ===== 页面吉祥物（教练 + 空状态） ===== */
+const MASCOT_COACH = { body: '#FFF3D2', item: 'pencil', face: 'happy', glasses: true, bowtie: true };
+const MASCOT_SLEEPY = { body: '#E5F5EC', ear: 'bear', face: 'sleepy' };
+const MASCOT_HOPEN = { body: '#FDE7EF', ear: 'bunny', item: 'book', face: 'happy' };
+
+/* ===== 马卡龙主题（每个孩子可以选自己的） ===== */
+const THEMES = {
+  sakura:   { name: '樱花粉',   paper: '#FDF7F3', sw: '#F7A8B8' },
+  mint:     { name: '薄荷糖',   paper: '#F0F9F3', sw: '#9FDCC0' },
+  lavender: { name: '薰衣草',   paper: '#F5F2FB', sw: '#C4B5EC' },
+  lemon:    { name: '柠檬苏打', paper: '#FCF9EC', sw: '#F5DE8C' },
+  sky:      { name: '天空云',   paper: '#F0F5FB', sw: '#A9CDF0' },
+  peach:    { name: '蜜桃奶昔', paper: '#FCF4EF', sw: '#FFC3A8' }
+};
 
 /* ===== 写作时滚动的鼓励语（只打气，不出内容） ===== */
 const ENCOURAGE = [

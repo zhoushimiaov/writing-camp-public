@@ -1,6 +1,6 @@
 /* 写作小能手训练营 · 离线缓存（网络优先，断网时用缓存） */
 'use strict';
-const CACHE = 'writing-camp-v9';
+const CACHE = 'writing-camp-v10';
 const CORE = [
   './',
   './index.html',
