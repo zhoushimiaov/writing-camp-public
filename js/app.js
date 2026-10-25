@@ -341,9 +341,9 @@ function mascot(spec, size, mono) {
   const eyeR = '<circle cx="75" cy="71" r="7.5" fill="' + S + '"/><circle cx="78" cy="68" r="2.8" fill="#fff"/><circle cx="72.5" cy="74" r="1.4" fill="#fff"/>';
   const wMouth = '<path d="M53 82 q3.5 4.5 7 0 q3.5 4.5 7 0" fill="none" ' + st + ' stroke-width="3"/>';
   let s = '';
-  /* 小短腿（藏在身体后面，只露出一点点） */
-  s += '<ellipse cx="46" cy="107" rx="10" ry="7" fill="' + bd + '" ' + st + ' stroke-width="3.5"/>' +
-       '<ellipse cx="74" cy="107" rx="10" ry="7" fill="' + bd + '" ' + st + ' stroke-width="3.5"/>';
+  /* 小短腿（藏在身体后面，只露出一点点，向外分开不挤领结） */
+  s += '<ellipse cx="38" cy="107" rx="10" ry="7" fill="' + bd + '" ' + st + ' stroke-width="3.5"/>' +
+       '<ellipse cx="82" cy="107" rx="10" ry="7" fill="' + bd + '" ' + st + ' stroke-width="3.5"/>';
   /* 耳朵（画在身体后面） */
   if (spec.ear === 'cat') s +=
     '<polygon points="31,42 26,10 58,30" fill="' + F('#F9DC8F') + '" ' + st + ' stroke-width="3.5"/>' +
@@ -382,11 +382,11 @@ function mascot(spec, size, mono) {
     '<circle cx="45" cy="71" r="11.5" fill="none" ' + st + ' stroke-width="3"/>' +
     '<circle cx="75" cy="71" r="11.5" fill="none" ' + st + ' stroke-width="3"/>' +
     '<path d="M56.5 71 h7" ' + st + ' stroke-width="3"/>';
-  /* 领结 */
+  /* 领结（贴着肚子中下方，和分开的小短脚留出间隙） */
   if (spec.bowtie) s +=
-    '<polygon points="58,101 43,94 43,108" fill="' + PIN + '" ' + st + ' stroke-width="2.8"/>' +
-    '<polygon points="62,101 77,94 77,108" fill="' + PIN + '" ' + st + ' stroke-width="2.8"/>' +
-    '<circle cx="60" cy="101" r="4" fill="' + F('#C9647F') + '"/>';
+    '<polygon points="58,96 43,89 43,103" fill="' + PIN + '" ' + st + ' stroke-width="2.8"/>' +
+    '<polygon points="62,96 77,89 77,103" fill="' + PIN + '" ' + st + ' stroke-width="2.8"/>' +
+    '<circle cx="60" cy="96" r="4" fill="' + F('#C9647F') + '"/>';
   /* 帽子 */
   if (spec.hat === 'party') s +=
     '<polygon points="60,7 49,32 71,32" fill="' + PIN + '" ' + st + ' stroke-width="3.5"/>' +
@@ -403,9 +403,9 @@ function mascot(spec, size, mono) {
     '<ellipse cx="60" cy="27" rx="38" ry="8" fill="' + F('#8A7F96') + '" ' + st + ' stroke-width="3.5"/>';
   /* 手里的道具（画在最前面） */
   if (spec.item === 'pencil') s +=
-    '<g transform="rotate(-30 88 86)"><rect x="83" y="58" width="10" height="7" rx="2" fill="' + PIN + '" ' + st + ' stroke-width="3.2"/>' +
-    '<rect x="83" y="65" width="10" height="22" rx="2" fill="' + F('#FFD3B8') + '" ' + st + ' stroke-width="3.2"/>' +
-    '<polygon points="83,87 88,98 93,87" fill="' + F('#F9DC8F') + '" ' + st + ' stroke-width="3.2"/></g>';
+    '<g transform="rotate(22 90 100)"><rect x="85" y="58" width="10" height="7" rx="2" fill="' + PIN + '" ' + st + ' stroke-width="3.2"/>' +
+    '<rect x="85" y="65" width="10" height="22" rx="2" fill="' + F('#FFD3B8') + '" ' + st + ' stroke-width="3.2"/>' +
+    '<polygon points="85,87 90,98 95,87" fill="' + F('#F9DC8F') + '" ' + st + ' stroke-width="3.2"/></g>';
   if (spec.item === 'book') s +=
     '<rect x="72" y="79" width="30" height="23" rx="4" fill="' + (mono ? '#CFC9DB' : '#fff') + '" ' + st + ' stroke-width="3.8"/>' +
     '<path d="M87 80 v21" ' + st + ' stroke-width="3"/>' +
