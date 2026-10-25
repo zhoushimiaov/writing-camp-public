@@ -14,3 +14,7 @@ __pycache__/
 *.log
 .DS_Store
 Thumbs.db
+
+# ===== 小红书小工具构建产物 =====
+xhs/
+写作小能手训练营-小红书小工具.zip
