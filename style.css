@@ -548,6 +548,59 @@ table.mini td { border: none; border-top: 1px dashed rgba(120,100,130,.25); padd
 @media (max-width: 560px) {
   .quick3 { grid-template-columns: 1fr; }
   .brain-grid { grid-template-columns: 1fr; }
+
+  /* ===== 竖屏移动端排版优化：给字留出呼吸感 ===== */
+  body { line-height: 1.85; letter-spacing: .2px; }
+  #topbar {
+    gap: 10px; padding: 12px 14px 8px;
+    padding-top: calc(12px + var(--safe-area-inset-top, env(safe-area-inset-top, 0px)));
+  }
+  .brand { gap: 8px; }
+  .logo { font-size: 30px; }
+  .brand-name { font-size: 21px; letter-spacing: 1px; }
+  .brand-sub { font-size: 12px; }
+  .kid-btn { padding: 5px 12px 5px 8px; font-size: 15px; }
+  .kid-btn .av { font-size: 18px; }
+  .theme-btn { width: 38px; height: 38px; font-size: 18px; }
+  .status { min-width: 148px; }
+  .streak, .rankline { font-size: 14px; }
+  .xpbar { height: 10px; }
+  .nextup { font-size: 12px; }
+  #tabs { gap: 6px; padding: 0 12px 10px; }
+  .tab { padding: 7px 13px; font-size: 15px; border-radius: 10px 10px 0 0; }
+  #main { padding: 14px 12px 96px; }
+  .wrap { gap: 13px; }
+  .card { padding: 16px 14px; border-radius: 14px; }
+  .sec-t { font-size: 19px; margin-bottom: 8px; }
+  .hero h1 { font-size: 23px; }
+  .focus-line { font-size: 13px; }
+  .m-emoji { font-size: 34px; }
+  .m-title { font-size: 19px; }
+  .m-desc { font-size: 15px; }
+  .q-text { font-size: 23px; line-height: 1.6; }
+  .q-phase { font-size: 15px; }
+  .btn { padding: 10px 16px; font-size: 16px; }
+  .btn.big { font-size: 18px; padding: 11px 26px; }
+  .steps { gap: 4px; }
+  .step { padding: 3px 11px 3px 5px; font-size: 13px; }
+  .step i { width: 20px; height: 20px; font-size: 12px; }
+  .oral-title { font-size: 19px; }
+  .oral-challenge { font-size: 16px; line-height: 1.85; }
+  .enc-line { font-size: 14px; }
+  .cc { font-size: 20px; }
+  .cc.big { font-size: 24px; }
+  .ach-grid { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 8px; }
+  .works-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+  .th-picker { grid-template-columns: repeat(2, 1fr); }
+  .mat-form, .im-form, .best-row { flex-wrap: wrap; }
+  .mat-form input, .im-form textarea, .best-row input { flex: 1 1 170px; min-width: 0; }
+  .mat-form select { flex: none; }
+  .mat-form .btn, .im-form .btn, .best-row .btn { flex: none; }
+  .pc-title { font-size: 24px; }
+  .pc-text { font-size: 16px; }
+  .modal { padding: 18px 16px; }
+  .overlay { padding: 24px 10px; }
+  .ob-kid { padding: 12px; }
 }
 
 /* ===== 触屏（iPad / 手机）适配 ===== */
